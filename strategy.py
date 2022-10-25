@@ -2,7 +2,7 @@ import pandas as pd
 from abc import ABC, abstractmethod
 
 from typing import Optional
-
+from keras.models import load_model
 
 class Strategy(ABC):
 
@@ -30,7 +30,7 @@ class MeanReversionStrategy(Strategy):
 
 
 class YourStrategy(Strategy):
-    required_rows = ...  # Specify how many minutes of data are required for live prediction
+    required_rows = 7*24*60  # Specify how many minutes of data are required for live prediction
 
     def __init__(self):
         training_data = pd.read_pickle("data/train_data.pickle")
@@ -38,4 +38,15 @@ class YourStrategy(Strategy):
         pass
 
     def compute_target_position(self, current_data: pd.DataFrame, current_position: float) -> Optional[float]:
-        pass  # produce inputs to model from datafram, compute predictions and submit new target position
+        current_price = current_data['price'][-1]
+        model = load_model('models/two_weeks_lstm_reg.h5')
+        num_mins = 60
+        col_min = new_image.min(axis=0)
+        col_max = new_image.max(axis=0)
+        new_image = (new_image - col_min) / (col_max - col_min)
+        images = np.zeros([0, num_mins, data.shape[1]])
+        images[train_test_idx:, :, :]
+        pred_price = model.predict(current_data)
+        target_position = current_position + (pred_price - current_price)/1000
+
+        return target_position  # produce inputs to model from datafram, compute predictions and submit new target position
